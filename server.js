@@ -1,4 +1,15 @@
 const mysql = require('mysql2');
+const express = require('express');
+
+const app = express();
+// const apiRoutes = require('./routes/index');
+
+// Express middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Use the apiRoutes
+// app.use('/api', apiRoutes);
 
 // Create the connection to database
 const connection = mysql.createConnection({
@@ -8,7 +19,7 @@ const connection = mysql.createConnection({
   user: 'root',
   // Your MySQL password
   password: 'mySqlR00tPass!',
-  database: 'ice_creamDB'
+  database: 'manager_db'
 });
 
 connection.connect(err => {
@@ -16,12 +27,6 @@ connection.connect(err => {
   console.log('connected as id ' + connection.threadId);
 //   afterConnection(); <----- Might need this?
 });
-
-
-
-
-
-
 
 
 // afterConnection = () => {
