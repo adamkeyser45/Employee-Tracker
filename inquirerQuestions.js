@@ -1,5 +1,3 @@
-const inquirer = require('inquirer');
-
 const taskQuestion = [
     {
         type: 'list',
@@ -151,3 +149,11 @@ const updateEmployeeQuestions = [
         ]
     }
 ];
+
+module.exports = {
+    taskQuestion,
+    addEmployeeQuestions,
+    addRoleQuestions,
+    addDeptQuestions,
+    updateEmployeeQuestions
+};

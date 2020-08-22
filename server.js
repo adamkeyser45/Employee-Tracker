@@ -1,5 +1,8 @@
 const mysql = require('mysql2');
 const express = require('express');
+const inquirer = require('inquirer');
+
+const { taskQuestion, addEmployeeQuestions, addRoleQuestions, addDeptQuestions, updateEmployeeQuestions} = require('./inquirerQuestions');
 
 const app = express();
 // const apiRoutes = require('./routes/index');
@@ -25,10 +28,47 @@ const connection = mysql.createConnection({
 connection.connect(err => {
   if (err) throw err;
   console.log('connected as id ' + connection.threadId);
-//   afterConnection(); <----- Might need this?
+  startApp();
 });
 
+startApp = () => {
+    console.log(`
+        -------------------
+        -     EMPLOYEE    -
+        -      MANAGER    -
+        -------------------`
+    );
+    taskChoice();
+};
 
-// afterConnection = () => {
-//     connection.end(); <-- Might need this?
-// };
+taskChoice = () => {
+    return inquirer.prompt(taskQuestion)
+    .then(choice => {
+        if (choice.taskChoice === "Quit") {
+            console.log('Thanks for using the Employee Manager!');
+            connection.end();
+        }
+        else if (choice.taskChoice === 'View all Employees') {
+            getEmployees();
+        }
+        else if (choice.taskChoice === "View all Roles") {
+
+        }
+    });
+};
+
+getEmployees = () => {
+    connection.query(`SELECT * FROM employee`, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        taskChoice();
+    });
+};
+
+getRoles = () => {
+    connection.query(`SELECT * FROM eRole`, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        taskChoice();
+    });
+};
