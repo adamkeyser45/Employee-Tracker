@@ -48,22 +48,27 @@ const addEmployeeQuestions = [
         name: 'addEmployeeRole',
         message: "What is the employee's role?",
         choices: [
-            'Sales Lead', 
-            'Salesperson', 
-            'Lead Engineer',
-            'Software Engineer',
-            'Accountant',
-            'Legal Team Lead',
-            'Lawyer'
+            {value: '1', name: 'Sales Lead'}, 
+            {value: '2', name: 'Salesperson'}, 
+            {value: '3', name: 'Lead Engineer'},
+            {value: '4', name: 'Software Engineer'},
+            {value: '5', name: 'Accountant'},
+            {value: '6', name: 'Legal Team Lead'},
+            {value: '7', name: 'Lawyer'}
         ]
     },
     {
-        type: 'list',
-        name: 'addEmployeeManager',
-        message: "Who is the employee's manager?",
-        choices: [
-            // List of employees
-        ]
+        type: 'input',
+        name: 'addEmployeeManagerId',
+        message: "What is the ID of this employee's manager?",
+        validate: input => {
+            if (input) {
+                return true;
+            } else {
+                console.log('Please input a number.');
+                return false;
+            }
+        }
     }
 ];
 
