@@ -68,6 +68,9 @@ taskChoice = () => {
         else if (choice.taskChoice === "Add a Department") {
             addDept();
         }
+        else if (choice.taskChoice === "Update an Employee Role") {
+            updateEmployee();
+        }
     });
 };
 
@@ -107,7 +110,6 @@ addEmployee = () => {
             ('${data.addEmployeeFirstName}', '${data.addEmployeeLastName}', ${data.addEmployeeRole}, ${data.addEmployeeManagerId})`, 
         function (err, res) {
             if (err) throw err;
-            console.log(res);
             console.log("Employee Added!");
             taskChoice();
         });
@@ -123,7 +125,6 @@ addRole = () => {
             ('${data.addRole}', '${data.addRoleSalary}', ${data.addRoleId})`, 
         function (err, res) {
             if (err) throw err;
-            console.log(res);
             console.log("Role Added!");
             taskChoice();
         });
@@ -132,5 +133,30 @@ addRole = () => {
 
 addDept = () => {
     return inquirer.prompt(addDeptQuestions)
-    .then();    
+    .then(data => {
+        connection.query(`
+        INSERT INTO department (deptName)
+        VALUES
+            ('${data.addDepartment}')`, 
+        function (err, res) {
+            if (err) throw err;
+            console.log("Department Added!");
+            taskChoice();
+        });
+    });  
+};
+
+updateEmployee = () => {
+    return inquirer.prompt(updateEmployeeQuestions)
+    .then(data => {
+        connection.query(`
+        UPDATE employee
+        SET role_id = ${data.updateEmployee2}
+        WHERE id = ${data.updateEmployee}`, 
+        function (err, res) {
+            if (err) throw err;
+            console.log("Employee Updated!");
+            taskChoice();
+        });
+    });
 };

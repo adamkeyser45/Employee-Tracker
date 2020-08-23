@@ -118,12 +118,12 @@ const addDeptQuestions = [
     {
         type: 'input',
         name: 'addDepartment',
-        message: "What Department would you like to add?",
+        message: "What is the name of the Department you would like to add?",
         validate: input => {
             if (input) {
                 return true;
             } else {
-                console.log('Please input a Department.');
+                console.log('Please input a Department Name.');
                 return false;
             }
         }
@@ -132,25 +132,30 @@ const addDeptQuestions = [
 
 const updateEmployeeQuestions = [
     {
-        type: 'list',
+        type: 'input',
         name: 'updateEmployee',
-        message: "Who's role would you like to update?",
-        choices: [
-            // List of employees
-        ]
+        message: "What is the ID of the employee you would like to update?",
+        validate: input => {
+            if (input > 0) {
+                return true;
+            } else {
+                console.log('Please input a Number.');
+                return false;
+            }
+        }
     },
     {
         type: 'list',
         name: 'updateEmployee2',
         message: "What is the employee's new role?",
         choices: [
-            'Sales Lead', 
-            'Salesperson', 
-            'Lead Engineer',
-            'Software Engineer',
-            'Accountant',
-            'Legal Team Lead',
-            'Lawyer'
+            {value: '1', name: 'Sales Lead'}, 
+            {value: '2', name: 'Salesperson'}, 
+            {value: '3', name: 'Lead Engineer'},
+            {value: '4', name: 'Software Engineer'},
+            {value: '5', name: 'Accountant'},
+            {value: '6', name: 'Legal Team Lead'},
+            {value: '7', name: 'Lawyer'}
         ]
     }
 ];
