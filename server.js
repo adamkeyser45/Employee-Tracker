@@ -33,11 +33,12 @@ connection.connect(err => {
 
 startApp = () => {
     console.log(`
-    --   ____ _  _ ____ __    __ _  _ ____ ____    _  _   __   __ _  __   ___ ____ ____ 
-    --  (  __| \/ |  _ (  )  /  ( \/ |  __|  __)  ( \/ ) / _\ (  ( \/ _\ / __|  __|  _ \
-    --   ) _)/ \/ \) __/ (_/(  O )  / ) _) ) _)   / \/ \/    \/    /    ( (_ \) _) )   /
-    --  (____)_)(_(__) \____/\__(__/ (____|____)  \_)(_/\_/\_/\_)__)_/\_/\___(____|__\_)
-    `
+
+ =======================
+ =   Employee Manager  =
+ =======================                                                                                                     
+    
+`
     );
     taskChoice();
 };
@@ -115,7 +116,18 @@ addEmployee = () => {
 
 addRole = () => {
     return inquirer.prompt(addRoleQuestions)
-    .then();    
+    .then(data => {
+        connection.query(`
+        INSERT INTO eRole (title, salary, department_id)
+        VALUES
+            ('${data.addRole}', '${data.addRoleSalary}', ${data.addRoleId})`, 
+        function (err, res) {
+            if (err) throw err;
+            console.log(res);
+            console.log("Role Added!");
+            taskChoice();
+        });
+    });  
 };
 
 addDept = () => {
