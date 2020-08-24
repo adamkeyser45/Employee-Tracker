@@ -2,7 +2,7 @@ const mysql = require('mysql2');
 const express = require('express');
 const inquirer = require('inquirer');
 
-const { taskQuestion, addEmployeeQuestions, addRoleQuestions, addDeptQuestions, updateEmployeeQuestions} = require('./inquirerQuestions');
+const { taskQuestion, addDeptQuestions} = require('./inquirerQuestions');
 const { response } = require('express');
 
 const app = express();

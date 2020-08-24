@@ -13,7 +13,7 @@ CREATE TABLE eRole (
     title VARCHAR(30) NOT NULL,
     salary DECIMAL NOT NULL,
     department_id INTEGER UNSIGNED,
-    CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE,
+    CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id),
     PRIMARY KEY (id)
 );
 
@@ -23,7 +23,7 @@ CREATE TABLE employee (
   last_name VARCHAR(30) NOT NULL,
   role_id INTEGER UNSIGNED,
   manager_id INTEGER UNSIGNED,
-  CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES eRole(id) ON DELETE CASCADE,
-  CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE CASCADE,
+  CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES eRole(id),
+  CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id),
   PRIMARY KEY (id)
 );
