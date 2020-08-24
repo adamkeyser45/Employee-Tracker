@@ -120,7 +120,12 @@ getRoles = () => {
 
 // Need to update query to give specific information
 getDepts = () => {
-    connection.query(`SELECT * FROM department`, function (err, res) {
+    connection.query(`
+    SELECT
+        id AS ID, 
+        deptName AS "Department Name"  
+        FROM department
+        `, function (err, res) {
         if (err) throw err;
         console.table(res);
         taskChoice();
