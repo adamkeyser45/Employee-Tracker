@@ -6,14 +6,10 @@ const { taskQuestion, addDeptQuestions} = require('./inquirerQuestions');
 const { response } = require('express');
 
 const app = express();
-// const apiRoutes = require('./routes/index');
 
 // Express middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// Use the apiRoutes
-// app.use('/api', apiRoutes);
 
 // Create the connection to database
 const connection = mysql.createConnection({
@@ -26,12 +22,14 @@ const connection = mysql.createConnection({
   database: 'manager_db'
 });
 
+// Server Start
 connection.connect(err => {
   if (err) throw err;
   console.log('connected as id ' + connection.threadId);
   startApp();
 });
 
+// Function that starts app and sends to the task menu
 startApp = () => {
     console.log(`
 
@@ -44,6 +42,7 @@ startApp = () => {
     taskChoice();
 };
 
+// Task menu, calls appropriate functions
 taskChoice = () => {
     return inquirer.prompt(taskQuestion)
     .then(choice => {
@@ -75,7 +74,7 @@ taskChoice = () => {
     });
 };
 
-// Need to update query to give specific information
+// Displays all current employees
 getEmployees = () => {
     connection.query(`
     SELECT 
@@ -100,7 +99,7 @@ getEmployees = () => {
     });
 };
 
-// Need to update query to give specific information
+// Displays all current roles
 getRoles = () => {
     connection.query(`
     SELECT 
@@ -119,7 +118,7 @@ getRoles = () => {
     });
 };
 
-// Need to update query to give specific information
+// Displays all current departments
 getDepts = () => {
     connection.query(`
     SELECT
@@ -133,12 +132,14 @@ getDepts = () => {
     });
 };
 
+// Adds an employee
 addEmployee = () => {
     connection.query("SELECT * FROM employee", function (err, employees) {
         if(err) throw err;
         connection.query("SELECT * FROM eRole", function (err, roles) {
             if(err) throw err;
 
+            // questions to ask about new employee details
             return inquirer.prompt([
                 {
                     type: 'input',
@@ -170,6 +171,7 @@ addEmployee = () => {
                     type: 'list',
                     name: 'addEmployeeRole',
                     message: "What is the employee's role?",
+                    // This code inputs the current roles as choices
                     choices: function() {
                         let choiceArr = [];
                         for (let i=0; i < roles.length; i++) {
@@ -182,6 +184,7 @@ addEmployee = () => {
                     type: 'list',
                     name: 'addEmployeeManager',
                     message: "Who is the employee's manager?",
+                    // This code inputs the current list of employee's last names
                     choices: function() {
                         let choiceArr = [];
                         for (let i=0; i < employees.length; i++) {
@@ -193,6 +196,7 @@ addEmployee = () => {
             ])
             .then(data => {
 
+                // These 2 for loops assign values to the answer choices above so they can be added in below
                 for (let i = 0; i < roles.length; i++) {
                     if(roles[i].title === data.addEmployeeRole) {
                         data.role_id = roles[i].id;
@@ -219,10 +223,12 @@ addEmployee = () => {
     });
 };
 
+// Adds a new role
 addRole = () => {
     connection.query("SELECT * FROM department", function (err, departments) {
         if(err) throw err;
 
+        // questions for details about new role
         return inquirer.prompt([
             {
                 type: 'input',
@@ -254,6 +260,7 @@ addRole = () => {
                 type: 'list',
                 name: 'addRoleDept',
                 message: "What Department does the new Role fall under?",
+                // This code displays all current departments
                 choices: function() {
                     let choiceArr = [];
                     for (let i=0; i < departments.length; i++) {
@@ -265,6 +272,7 @@ addRole = () => {
         ])
         .then(data => {
 
+            // Loop to add value to departments to be used below
             for (let i = 0; i < departments.length; i++) {
                 if(departments[i].deptName === data.addRoleDept) {
                     data.department_id = departments[i].id;
@@ -284,6 +292,7 @@ addRole = () => {
     });
 };
 
+// function to add a department, questions are on "inquirerQuestions.js"
 addDept = () => {
     return inquirer.prompt(addDeptQuestions)
     .then(data => {
@@ -299,17 +308,20 @@ addDept = () => {
     });  
 };
 
+// function to update an employee
 updateEmployee = () => {
     connection.query("SELECT * FROM employee", function (err, employees) {
         if(err) throw err;
         connection.query("SELECT * FROM eRole", function (err, roles) {
             if(err) throw err;
 
+            // Questions to ask details about who and what to update
             return inquirer.prompt([
                 {
                     type: 'list',
                     name: 'updateEmployee',
                     message: "Which employee would you like to update?",
+                    // This code displays all current employees
                     choices: function() {
                         let choiceArr = [];
                         for (let i=0; i < employees.length; i++) {
@@ -322,6 +334,7 @@ updateEmployee = () => {
                     type: 'list',
                     name: 'updateEmployee2',
                     message: "What is the employee's new role?",
+                    // This code inputs the current roles as choices
                     choices: function() {
                         let choiceArr = [];
                         for (let i=0; i < roles.length; i++) {
@@ -333,6 +346,7 @@ updateEmployee = () => {
             ])
             .then(data => {
 
+                // Loops to assign values to the choices above to be used below
                 for (let i = 0; i < employees.length; i++) {
                     if(`${employees[i].first_name} ${employees[i].last_name}` === data.updateEmployee) {
                         data.id = employees[i].id;
