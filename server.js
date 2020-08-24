@@ -76,7 +76,19 @@ taskChoice = () => {
 
 // Need to update query to give specific information
 getEmployees = () => {
-    connection.query(`SELECT * FROM employee`, function (err, res) {
+    connection.query(`
+    SELECT employee.id AS ID, employee.first_name AS FirstName, 
+        employee.last_name AS LastName, 
+        eRole.title AS Role, 
+        eRole.salary AS Salary, 
+        department.deptName AS Department
+    FROM employee
+    INNER JOIN department 
+    ON department.id = employee.role_id 
+    LEFT JOIN eRole 
+    ON eRole.id = employee.role_id
+    `,
+    function (err, res) {
         if (err) throw err;
         console.table(res);
         taskChoice();
