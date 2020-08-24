@@ -47,15 +47,13 @@ const addEmployeeQuestions = [
         type: 'list',
         name: 'addEmployeeRole',
         message: "What is the employee's role?",
-        choices: [
-            {value: '1', name: 'Sales Lead'}, 
-            {value: '2', name: 'Salesperson'}, 
-            {value: '3', name: 'Lead Engineer'},
-            {value: '4', name: 'Software Engineer'},
-            {value: '5', name: 'Accountant'},
-            {value: '6', name: 'Legal Team Lead'},
-            {value: '7', name: 'Lawyer'}
-        ]
+        choices: function() {
+            let choiceArr = [];
+            for (var i=0; i < roles.length; i++) {
+                choiceArr.push(roles[i].title)
+            }
+            return choiceArray;
+        }
     },
     {
         type: 'input',

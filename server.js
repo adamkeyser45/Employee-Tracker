@@ -3,6 +3,7 @@ const express = require('express');
 const inquirer = require('inquirer');
 
 const { taskQuestion, addEmployeeQuestions, addRoleQuestions, addDeptQuestions, updateEmployeeQuestions} = require('./inquirerQuestions');
+const { response } = require('express');
 
 const app = express();
 // const apiRoutes = require('./routes/index');
@@ -133,16 +134,88 @@ getDepts = () => {
 };
 
 addEmployee = () => {
-    return inquirer.prompt(addEmployeeQuestions)
-    .then(data => {
-        connection.query(`
-        INSERT INTO employee (first_name, last_name, role_id, manager_id)
-        VALUES
-            ('${data.addEmployeeFirstName}', '${data.addEmployeeLastName}', ${data.addEmployeeRole}, ${data.addEmployeeManagerId})`, 
-        function (err, res) {
-            if (err) throw err;
-            console.log("Employee Added!");
-            taskChoice();
+    connection.query("SELECT * FROM employee", function (err, employees) {
+        if(err) throw err;
+        connection.query("SELECT * FROM eRole", function (err, roles) {
+            if(err) throw err;
+
+            return inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'addEmployeeFirstName',
+                    message: "What is the employee's first name?",
+                    validate: input => {
+                        if (input) {
+                            return true;
+                        } else {
+                            console.log('Please input a name.');
+                            return false;
+                        }
+                    }
+                },
+                {
+                    type: 'input',
+                    name: 'addEmployeeLastName',
+                    message: "What is the employee's last name?",
+                    validate: input => {
+                        if (input) {
+                            return true;
+                        } else {
+                            console.log('Please input a name.');
+                            return false;
+                        }
+                    }
+                },
+                {
+                    type: 'list',
+                    name: 'addEmployeeRole',
+                    message: "What is the employee's role?",
+                    choices: function() {
+                        let choiceArr = [];
+                        for (let i=0; i < roles.length; i++) {
+                            choiceArr.push(roles[i].title)
+                        }
+                        return choiceArr;
+                    }
+                },
+                {
+                    type: 'list',
+                    name: 'addEmployeeManager',
+                    message: "Who is the employee's manager?",
+                    choices: function() {
+                        let choiceArr = [];
+                        for (let i=0; i < employees.length; i++) {
+                            choiceArr.push(employees[i].last_name)
+                        }
+                        return choiceArr;
+                    }
+                }
+            ])
+            .then(data => {
+
+                for (let i = 0; i < roles.length; i++) {
+                    if(roles[i].title === data.addEmployeeRole) {
+                        data.role_id = roles[i].id;
+                    }
+                }
+
+                for (let i = 0; i < employees.length; i++) {
+                    if(employees[i].last_name === data.addEmployeeManager) {
+                        data.manager_id = employees[i].id;
+                    }
+                }
+
+
+                connection.query(`
+                INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                VALUES
+                    ('${data.addEmployeeFirstName}', '${data.addEmployeeLastName}', ${data.role_id}, ${data.manager_id})`, 
+                function (err, res) {
+                    if (err) throw err;
+                    console.log("Employee Added!");
+                    taskChoice();
+                });
+            });
         });
     });
 };
