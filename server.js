@@ -205,7 +205,6 @@ addEmployee = () => {
                     }
                 }
 
-
                 connection.query(`
                 INSERT INTO employee (first_name, last_name, role_id, manager_id)
                 VALUES
@@ -221,18 +220,68 @@ addEmployee = () => {
 };
 
 addRole = () => {
-    return inquirer.prompt(addRoleQuestions)
-    .then(data => {
-        connection.query(`
-        INSERT INTO eRole (title, salary, department_id)
-        VALUES
-            ('${data.addRole}', '${data.addRoleSalary}', ${data.addRoleId})`, 
-        function (err, res) {
-            if (err) throw err;
-            console.log("Role Added!");
-            taskChoice();
-        });
-    });  
+    connection.query("SELECT * FROM department", function (err, departments) {
+        if(err) throw err;
+
+        return inquirer.prompt([
+            {
+                type: 'input',
+                name: 'addRole',
+                message: "What role would you like to add?",
+                validate: input => {
+                    if (input) {
+                        return true;
+                    } else {
+                        console.log("Please input the role's name.");
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'addRoleSalary',
+                message: "What is the role's Salary?",
+                validate: input => {
+                    if (input > 0) {
+                        return true;
+                    } else {
+                        console.log('Please input a number.');
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'list',
+                name: 'addRoleDept',
+                message: "What Department does the new Role fall under?",
+                choices: function() {
+                    let choiceArr = [];
+                    for (let i=0; i < departments.length; i++) {
+                        choiceArr.push(departments[i].deptName)
+                    }
+                    return choiceArr;
+                }
+            }
+        ])
+        .then(data => {
+
+            for (let i = 0; i < departments.length; i++) {
+                if(departments[i].deptName === data.addRoleDept) {
+                    data.department_id = departments[i].id;
+                }
+            }
+
+            connection.query(`
+            INSERT INTO eRole (title, salary, department_id)
+            VALUES
+                ('${data.addRole}', '${data.addRoleSalary}', ${data.department_id})`, 
+            function (err, res) {
+                if (err) throw err;
+                console.log("Role Added!");
+                taskChoice();
+            });
+        });   
+    });
 };
 
 addDept = () => {
@@ -251,16 +300,61 @@ addDept = () => {
 };
 
 updateEmployee = () => {
-    return inquirer.prompt(updateEmployeeQuestions)
-    .then(data => {
-        connection.query(`
-        UPDATE employee
-        SET role_id = ${data.updateEmployee2}
-        WHERE id = ${data.updateEmployee}`, 
-        function (err, res) {
-            if (err) throw err;
-            console.log("Employee Updated!");
-            taskChoice();
-        });
-    });
+    connection.query("SELECT * FROM employee", function (err, employees) {
+        if(err) throw err;
+        connection.query("SELECT * FROM eRole", function (err, roles) {
+            if(err) throw err;
+
+            return inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'updateEmployee',
+                    message: "Which employee would you like to update?",
+                    choices: function() {
+                        let choiceArr = [];
+                        for (let i=0; i < employees.length; i++) {
+                            choiceArr.push(`${employees[i].first_name} ${employees[i].last_name}`)
+                        }
+                        return choiceArr;
+                    }
+                },
+                {
+                    type: 'list',
+                    name: 'updateEmployee2',
+                    message: "What is the employee's new role?",
+                    choices: function() {
+                        let choiceArr = [];
+                        for (let i=0; i < roles.length; i++) {
+                            choiceArr.push(roles[i].title)
+                        }
+                        return choiceArr;
+                    }
+                }
+            ])
+            .then(data => {
+
+                for (let i = 0; i < employees.length; i++) {
+                    if(`${employees[i].first_name} ${employees[i].last_name}` === data.updateEmployee) {
+                        data.id = employees[i].id;
+                    }
+                }
+
+                for (let i = 0; i < roles.length; i++) {
+                    if(roles[i].title === data.updateEmployee2) {
+                        data.role_id = roles[i].id;
+                    }
+                }
+
+                connection.query(`
+                    UPDATE employee
+                    SET employee.role_id = ${data.role_id}
+                    WHERE employee.id = ${data.id}`, 
+                function (err, res) {
+                    if (err) throw err;
+                    console.log("Employee Updated!");
+                    taskChoice();
+                });
+            });
+        })
+    })
 };
